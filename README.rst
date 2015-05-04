@@ -28,5 +28,6 @@ A basic login example using pyserial:
     >>> linux.send('root')
     >>> linux.expect('/home/root $ ')
 
+
 .. |buildstatus| image:: https://travis-ci.org/eerimoq/xpect.svg
 .. _buildstatus: https://travis-ci.org/eerimoq/xpect
