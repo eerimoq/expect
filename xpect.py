@@ -7,19 +7,15 @@ class Handler(object):
     '''
     '''
     
-    def __init__(self, in_stream, out_stream=None, eol='\n'):
+    def __init__(self, iostream, eol='\n'):
         '''
         Initialize object with given parameters.
 
-        :param in_stream:  Stream object to read data from.
-        :param out_stream: Stream object to write data to. If None, set to `in_stream`.
-        :param eol:        'end of line' string to send after the 'send string'.
+        :param iostream: Io stream to read data from and write data data to.
+        :param eol:      'end of line' string to send after the 'send string'.
         '''
 
-        self.in_stream = in_stream
-        if not out_stream:
-            out_stream = in_stream
-        self.out_stream = out_stream
+        self.iostream = iostream
         self.in_buffer = ''
         self.eol = eol
 
@@ -40,7 +36,7 @@ class Handler(object):
                             self.in_buffer)
                 self.in_buffer = self.in_buffer[mo.end():]
                 return mo.group(1)
-            self.in_buffer += self.in_stream.read(1)
+            self.in_buffer += self.iostream.read(1)
 
     def send(self, string, send_eol=True):
         '''
@@ -53,4 +49,4 @@ class Handler(object):
         if send_eol:
             string += self.eol
         logger.info("Sending '%s'.", string)
-        self.out_stream.write(string)
+        self.iostream.write(string)
