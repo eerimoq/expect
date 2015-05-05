@@ -1,5 +1,6 @@
 import re
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -7,7 +8,11 @@ class Handler(object):
     '''
     '''
     
-    def __init__(self, iostream, eol='\n'):
+    def __init__(self,
+                 iostream,
+                 eol='\n',
+                 print_input=True,
+                 print_output=False):
         '''
         Initialize object with given parameters.
 
@@ -18,6 +23,8 @@ class Handler(object):
         self.iostream = iostream
         self.in_buffer = ''
         self.eol = eol
+        self.print_input = print_input
+        self.print_output = print_output
 
     def expect(self, pattern):
         '''
@@ -36,7 +43,10 @@ class Handler(object):
                             self.in_buffer)
                 self.in_buffer = self.in_buffer[mo.end():]
                 return mo.group(1)
-            self.in_buffer += self.iostream.read(1)
+            char = self.iostream.read(1)
+            if self.print_input:
+                sys.stdout.write(char)
+            self.in_buffer += char
 
     def send(self, string, send_eol=True):
         '''
@@ -48,5 +58,6 @@ class Handler(object):
 
         if send_eol:
             string += self.eol
-        logger.info("Sending '%s'.", string)
+        if self.print_output:
+            sys.stdout.write(string)
         self.iostream.write(string)

@@ -66,6 +66,7 @@ bootm 0x3000000 0x2000000 0x2A00000
         uboot.send('bootm 0x3000000 0x2000000 0x2A00000')
         uboot.expect('~ \$')
         self.assertEqual(uboot.iostream.out_stream.getvalue(), UBoot.OUTDATA)
+        sys.stdout.flush()
 
     def test_expect_return_value(self):
         '''
