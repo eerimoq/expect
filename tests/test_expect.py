@@ -2,7 +2,7 @@ import logging
 import sys
 import unittest
 sys.path.insert(0, '..')
-import xpect
+import expect
 
 # python 2 & 3 compatibility
 try:
@@ -24,7 +24,7 @@ class StringIo(object):
         self.out_stream.write(string)
 
 
-class XpectTest(unittest.TestCase):
+class ExpectTest(unittest.TestCase):
 
     def test_uboot(self):
         '''U-boot communication example.
@@ -53,7 +53,7 @@ bootm 0x3000000 0x2000000 0x2A00000
         prompt = 'u-boot> '
 
         # create the handler object and start to communicate with u-boot
-        uboot = xpect.Handler(UBoot())
+        uboot = expect.Handler(UBoot())
         uboot.expect('Booting in \d+ seconds...')
         uboot.send('')
         uboot.expect(prompt)
@@ -72,7 +72,7 @@ bootm 0x3000000 0x2000000 0x2A00000
         '''
         Verify the return value from the expect function.
         '''
-        foobar = xpect.Handler(StringIO('barfoo'))
+        foobar = expect.Handler(StringIO('barfoo'))
         match = foobar.expect('foo|bar')
         self.assertEqual(match, 'bar')
         match = foobar.expect('foo|bar')
@@ -83,7 +83,7 @@ bootm 0x3000000 0x2000000 0x2A00000
         End of line testing.
         '''
         iostream = StringIO()
-        handler = xpect.Handler(iostream, eol='\r\n')
+        handler = expect.Handler(iostream, eol='\r\n')
         handler.send('')
         self.assertEqual(iostream.getvalue(), '\r\n')
         handler.send('', send_eol=False)

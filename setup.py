@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='xpect',
-      version='0.3.0',
+      version='0.4.0',
       description='Programmed dialogue with interactive streams.',
       long_description=open('README.rst', 'r').read(),
       author='Erik Moqvist',
@@ -14,7 +14,7 @@ setup(name='xpect',
           'Programming Language :: Python :: 2',
           'Programming Language :: Python :: 3',
       ],
-      keywords=['xpect'],
-      url='https://github.com/eerimoq/xpect',
-      py_modules=['xpect'],
+      keywords=['expect'],
+      url='https://github.com/eerimoq/expect',
+      py_modules=['expect'],
       test_suite="tests")

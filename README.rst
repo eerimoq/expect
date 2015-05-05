@@ -11,16 +11,16 @@ Installation
 Example usage
 =============
 
-See the test suite: https://github.com/eerimoq/xpect/blob/master/tests/test_xpect.py
+See the test suite: https://github.com/eerimoq/expect/blob/master/tests/test_expect.py
 
 A basic login example using pyserial:
 
 .. code-block:: python
 
     >>> import pyserial
-    >>> import xpect
+    >>> import expect
     >>> serial_linux = pyserial.Serial('/dev/ttyS0')
-    >>> linux = xpect.Handler(serial_linux)
+    >>> linux = expect.Handler(serial_linux)
     >>> linux.send('')
     >>> linux.expect('username: ')
     >>> linux.send('root')
@@ -29,5 +29,5 @@ A basic login example using pyserial:
     >>> linux.expect('/home/root $ ')
 
 
-.. |buildstatus| image:: https://travis-ci.org/eerimoq/xpect.svg
-.. _buildstatus: https://travis-ci.org/eerimoq/xpect
+.. |buildstatus| image:: https://travis-ci.org/eerimoq/expect.svg
+.. _buildstatus: https://travis-ci.org/eerimoq/expect
