@@ -89,6 +89,20 @@ bootm 0x3000000 0x2000000 0x2A00000
         handler.send('', send_eol=False)
         self.assertEqual(iostream.getvalue(), '\r\n')
 
+    def test_break_condition(self):
+        '''
+        Verify that the expect function throws an exception
+        when the break condition is met.
+        '''
+        # The StringIO object returns '' when EOF is encountered.
+        iostream = StringIO()
+        handler = expect.Handler(iostream)
+        try:
+            handler.expect('foo')
+            self.fail()
+        except RuntimeError as e:
+            print(e)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
