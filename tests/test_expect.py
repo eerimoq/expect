@@ -27,7 +27,8 @@ class StringIo(object):
 class ExpectTest(unittest.TestCase):
 
     def test_uboot(self):
-        '''U-boot communication example.
+        '''
+        U-boot communication example.
         '''
 
         class UBoot(StringIo):
