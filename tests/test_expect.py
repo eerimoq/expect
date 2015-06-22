@@ -104,6 +104,20 @@ bootm 0x3000000 0x2000000 0x2A00000
         except RuntimeError as e:
             print(e)
 
+    def test_no_split(self):
+        '''
+        Verify that the expect function can match over multiple lines.
+        '''
+
+        class Handler(StringIo):
+
+            INDATA = '''
+foo
+bar
+'''
+
+        handler = expect.Handler(Handler(), split_pattern=None)
+        handler.expect('foo\nbar')
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
