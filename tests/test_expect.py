@@ -3,6 +3,7 @@ import sys
 import unittest
 sys.path.insert(0, '..')
 import expect
+import time
 
 # python 2 & 3 compatibility
 try:
@@ -12,6 +13,8 @@ except ImportError:
 
 
 class StringIo(object):
+
+    INDATA = None
 
     def __init__(self):
         self.in_stream = StringIO(self.INDATA)
@@ -27,13 +30,12 @@ class StringIo(object):
 class ExpectTest(unittest.TestCase):
 
     def test_uboot(self):
-        '''
-        U-boot communication example.
-        '''
+        """U-boot communication example.
+        """
 
         class UBoot(StringIo):
 
-            INDATA = '''
+            INDATA = """
 Booting in 3 seconds...
 Booting in 2 seconds...
 u-boot> fatload mmc 0 0x3000000 uImage
@@ -42,20 +44,20 @@ u-boot> fatload mmc 0 0x2000000 uramdisk.image.gz
 u-boot> bootm 0x3000000 0x2000000 0x2A00000
 ...
 ~ $
-'''
+"""
 
-            OUTDATA = '''
+            OUTDATA = """
 fatload mmc 0 0x3000000 uImage
 fatload mmc 0 0x2A00000 devicetree.dtb
 fatload mmc 0 0x2000000 uramdisk.image.gz
 bootm 0x3000000 0x2000000 0x2A00000
-'''
+"""
 
-        prompt = 'u-boot> '
+        prompt = r'u-boot> '
 
         # create the handler object and start to communicate with u-boot
         uboot = expect.Handler(UBoot())
-        uboot.expect('Booting in \d+ seconds...')
+        uboot.expect(r'Booting in \d+ seconds...')
         uboot.send('')
         uboot.expect(prompt)
         uboot.send('fatload mmc 0 0x3000000 uImage')
@@ -65,24 +67,22 @@ bootm 0x3000000 0x2000000 0x2A00000
         uboot.send('fatload mmc 0 0x2000000 uramdisk.image.gz')
         uboot.expect(prompt)
         uboot.send('bootm 0x3000000 0x2000000 0x2A00000')
-        uboot.expect('~ \$')
+        uboot.expect(r'~ \$')
         self.assertEqual(uboot.iostream.out_stream.getvalue(), UBoot.OUTDATA)
         sys.stdout.flush()
 
     def test_expect_return_value(self):
-        '''
-        Verify the return value from the expect function.
-        '''
+        """Verify the return value from the expect function.
+        """
         foobar = expect.Handler(StringIO('barfoo'))
-        match = foobar.expect('foo|bar')
+        match = foobar.expect(r'foo|bar')
         self.assertEqual(match, 'bar')
-        match = foobar.expect('foo|bar')
+        match = foobar.expect(r'foo|bar')
         self.assertEqual(match, 'foo')
 
     def test_eol(self):
-        '''
-        End of line testing.
-        '''
+        """End of line testing.
+        """
         iostream = StringIO()
         handler = expect.Handler(iostream, eol='\r\n')
         handler.send('')
@@ -91,33 +91,46 @@ bootm 0x3000000 0x2000000 0x2A00000
         self.assertEqual(iostream.getvalue(), '\r\n')
 
     def test_break_condition(self):
-        '''
-        Verify that the expect function throws an exception
+        """Verify that the expect function throws an exception
         when the break condition is met.
-        '''
+        """
         # The StringIO object returns '' when EOF is encountered.
         iostream = StringIO()
         handler = expect.Handler(iostream)
-        try:
-            handler.expect('foo')
-            self.fail()
-        except RuntimeError as e:
-            print(e)
+        with self.assertRaises(RuntimeError) as e:
+            handler.expect(r'foo')
+        print(e)
 
     def test_no_split(self):
-        '''
-        Verify that the expect function can match over multiple lines.
-        '''
+        """Verify that the expect function can match over multiple lines.
+        """
 
         class Handler(StringIo):
 
-            INDATA = '''
+            INDATA = """
 foo
 bar
-'''
+"""
 
         handler = expect.Handler(Handler(), split_pattern=None)
-        handler.expect('foo\nbar')
+        handler.expect(r'foo\nbar')
+
+    def test_expect_timeout(self):
+        """Test expect timeout functionality.
+        """
+
+        class Handler(object):
+
+            def read(self, count=1):
+                time.sleep(0.2)
+                return "1"
+
+        handler = expect.Handler(Handler())
+
+        with self.assertRaises(expect.ExpectTimeoutError) as e:
+            handler.expect(r"no match", timeout=0.1)
+        print(e)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)

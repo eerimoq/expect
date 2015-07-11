@@ -19,14 +19,14 @@ A basic login example using pyserial:
 
     >>> import pyserial
     >>> import expect
-    >>> serial_linux = pyserial.Serial('/dev/ttyS0')
+    >>> serial_linux = pyserial.Serial("/dev/ttyS0")
     >>> linux = expect.Handler(serial_linux)
-    >>> linux.send('')
-    >>> linux.expect('username: ')
-    >>> linux.send('root')
-    >>> linux.expect('password: ')
-    >>> linux.send('root')
-    >>> linux.expect('/home/root $ ')
+    >>> linux.send("")
+    >>> linux.expect(r"username: ")
+    >>> linux.send("root")
+    >>> linux.expect(r"password: ")
+    >>> linux.send("root")
+    >>> linux.expect(r"/home/root $ ")
 
 
 .. |buildstatus| image:: https://travis-ci.org/eerimoq/expect.svg
