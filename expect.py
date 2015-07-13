@@ -46,7 +46,6 @@ class Handler(object):
         self.iostream = iostream
         self.input_buffer = ''
         self.eol = eol
-        print(break_conditions)
         if break_conditions is None:
             break_conditions = ['', None]
         self.break_conditions = break_conditions
