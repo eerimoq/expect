@@ -3,7 +3,7 @@
 from setuptools import setup
 
 setup(name='xpect',
-      version='1.3.1',
+      version='1.4.0',
       description='Programmed dialogue with interactive streams.',
       long_description=open('README.rst', 'r').read(),
       author='Erik Moqvist',

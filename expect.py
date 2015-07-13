@@ -57,7 +57,7 @@ class Handler(object):
         else:
             self.re_split = None
 
-    def expect(self, pattern, timeout=None):
+    def expect(self, pattern, timeout=None, print_input=True):
         """Returns when regular expression `pattern` matches the data
         read from the output stream.
 
@@ -73,7 +73,7 @@ class Handler(object):
             mo = re_expect.search(self.input_buffer)
 
             if mo:
-                LOGGER.info("Found expected pattern '%s'.", pattern)
+                LOGGER.debug("Found expected pattern '%s'.", pattern)
                 self.input_buffer = self.input_buffer[mo.end():]
                 return mo.group(1)
             else:
@@ -81,7 +81,7 @@ class Handler(object):
                 if char in self.break_conditions:
                     fmt = "break condition met: '{}' in '{}'."
                     raise RuntimeError(fmt.format(char, self.break_conditions))
-                if self.print_input:
+                if self.print_input and print_input == True:
                     sys.stdout.write(char)
                 self.input_buffer += char
                 if self.re_split:
