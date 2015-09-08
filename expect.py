@@ -25,7 +25,8 @@ class Handler(object):
                  break_conditions=None,
                  print_input=True,
                  print_output=False,
-                 split_pattern='\n'):
+                 output=sys.stdout,
+                 split_pattern=r'\n'):
         """Initialize object with given parameters.
 
         :param iostream:         Io stream to read data from and write data
@@ -37,8 +38,9 @@ class Handler(object):
         :param break_conditions: expect() throws an exception if the returned
                                  value from `iostream`.read() is in this
                                  iterable.
-        :param print_input:      Print input on stdout.
-        :param print_output:     Print output on stdout.
+        :param print_input:      Print input on `output` object.
+        :param print_output:     Print output on `output` object.
+        :param output:           Write input and output data to this object.
         :param split_pattern:    Split read data using this regexp before sreaching
                                  for a match.
         """
@@ -51,6 +53,7 @@ class Handler(object):
         self.break_conditions = break_conditions
         self.print_input = print_input
         self.print_output = print_output
+        self.output = output
         if split_pattern:
             self.re_split = re.compile(split_pattern)
         else:
@@ -81,7 +84,7 @@ class Handler(object):
                     fmt = "break condition met: '{}' in '{}'."
                     raise RuntimeError(fmt.format(char, self.break_conditions))
                 if self.print_input and print_input == True:
-                    sys.stdout.write(char)
+                    self.output.write(char)
                 self.input_buffer += char
                 if self.re_split:
                     self.input_buffer = self.re_split.split(self.input_buffer)[-1]
@@ -102,5 +105,5 @@ class Handler(object):
         if send_eol:
             string += self.eol
         if self.print_output:
-            sys.stdout.write(string)
+            self.output.write(string)
         return self.iostream.write(string)
