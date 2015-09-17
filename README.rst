@@ -17,9 +17,9 @@ A basic login example using pyserial:
 
 .. code-block:: python
 
-    >>> import pyserial
+    >>> import serial
     >>> import expect
-    >>> serial_linux = pyserial.Serial("/dev/ttyS0")
+    >>> serial_linux = serial.Serial("/dev/ttyS0")
     >>> linux = expect.Handler(serial_linux)
     >>> linux.send("")
     >>> linux.expect(r"username: ")
