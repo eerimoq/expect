@@ -20,7 +20,7 @@ class StringIo(object):
         self.in_stream = StringIO(self.INDATA)
         self.out_stream = StringIO()
 
-    def read(self, count=1):
+    def read(self, _):
         return self.in_stream.read(1)
 
     def write(self, string):
@@ -97,7 +97,7 @@ bootm 0x3000000 0x2000000 0x2A00000
         # The StringIO object returns '' when EOF is encountered.
         iostream = StringIO()
         handler = expect.Handler(iostream)
-        with self.assertRaises(RuntimeError) as e:
+        with self.assertRaises(expect.BreakConditionError) as e:
             handler.expect(r'foo')
         print(e)
 
@@ -121,13 +121,13 @@ bar
 
         class Handler(object):
 
-            def read(self, count=1):
+            def read(self, _):
                 time.sleep(0.2)
                 return "1"
 
         handler = expect.Handler(Handler())
 
-        with self.assertRaises(expect.ExpectTimeoutError) as e:
+        with self.assertRaises(expect.TimeoutError) as e:
             handler.expect(r"no match", timeout=0.1)
         print(e)
 
