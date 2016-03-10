@@ -112,7 +112,7 @@ foo
 bar
 """
 
-        handler = expect.Handler(Handler(), split_pattern=None)
+        handler = expect.Handler(Handler(), receive_buffer_max=8)
         handler.expect(r'foo\nbar')
 
     def test_expect_timeout(self):

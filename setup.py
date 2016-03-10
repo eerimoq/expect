@@ -2,7 +2,7 @@
 
 from setuptools import setup
 
-VERSION  = "2.0.0"
+VERSION  = "3.0.0"
 
 if __name__ == "__main__":
     setup(name='xpect',

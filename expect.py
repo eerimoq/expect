@@ -36,23 +36,22 @@ class Handler(object):
                  print_input=True,
                  print_output=False,
                  output=None,
-                 split_pattern=r'\n'):
+                 receive_buffer_max=256):
         """Initialize object with given parameters.
 
-        :param iostream:         Io stream to read data from and write data
-                                 data to. This object must implement two
-                                 functions, read(count) and write(string).
-                                 read() must return a string.
-        :param eol:              'end of line' string to send after the
-                                 'send string'.
-        :param break_conditions: expect() throws an exception if the returned
-                                 value from `iostream`.read() is in this
-                                 iterable.
-        :param print_input:      Print input on `output` object.
-        :param print_output:     Print output on `output` object.
-        :param output:           Write input and output data to this object. Default is stdout.
-        :param split_pattern:    Split read data using this regexp before sreaching
-                                 for a match.
+        :param iostream:           Io stream to read data from and write data
+                                   data to. This object must implement two
+                                   functions, read(count) and write(string).
+                                   read() must return a string.
+        :param eol:                'end of line' string to send after the
+                                   'send string'.
+        :param break_conditions:   expect() throws an exception if the returned
+                                   value from `iostream`.read() is in this
+                                   iterable.
+        :param print_input:        Print input on `output` object.
+        :param print_output:       Print output on `output` object.
+        :param output:             Write input and output data to this object. Default is stdout.
+        :param receive_buffer_max: The maximum number of bytes to save in the receive buffer.
 
         """
 
@@ -70,10 +69,7 @@ class Handler(object):
         if output is None:
             self.output = sys.stdout
 
-        if split_pattern:
-            self.re_split = re.compile(split_pattern)
-        else:
-            self.re_split = None
+        self.receive_buffer_max = receive_buffer_max
 
     def expect(self, pattern, timeout=None, print_input=True):
         """Returns when regular expression `pattern` matches the data
@@ -110,8 +106,8 @@ class Handler(object):
 
                 self.input_buffer += char
 
-                if self.re_split:
-                    self.input_buffer = self.re_split.split(self.input_buffer)[-1]
+                # Limit the input buffer size for faster pattern matching.
+                self.input_buffer = self.input_buffer[-self.receive_buffer_max:]
 
                 # Timeout handling.
                 if timeout is not None:
