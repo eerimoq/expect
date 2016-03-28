@@ -4,7 +4,7 @@
 import re
 import logging
 import sys
-import time
+import threading
 
 __author__ = 'Erik Moqvist'
 __version__ = '3.1.0'
@@ -26,6 +26,20 @@ class BreakConditionError(Exception):
     """
 
     pass
+
+
+class _Timer(object):
+
+    def __init__(self, timeout):
+        self.expired = False
+        self.timer = threading.Timer(timeout, self.timer_expired)
+        self.timer.start()
+
+    def timer_expired(self):
+        self.expired = True
+
+    def cancel(self):
+        self.timer.cancel()
 
 
 class Handler(object):
@@ -85,8 +99,11 @@ class Handler(object):
 
         """
 
-        start_time = time.time()
+        # Timeout handling.
+        if timeout is not None:
+            timer = _Timer(timeout)
 
+        # Wait for pattern.
         re_expect = re.compile(r'(' + pattern + r')')
 
         while True:
@@ -95,6 +112,9 @@ class Handler(object):
             if mo:
                 LOGGER.debug("Found expected pattern '%s'.", pattern)
                 self.input_buffer = self.input_buffer[mo.end():]
+                
+                if timeout is not None:
+                    timer.cancel()
 
                 return mo.group(1)
             else:
@@ -114,7 +134,7 @@ class Handler(object):
 
                 # Timeout handling.
                 if timeout is not None:
-                    if (time.time() - start_time) > timeout:
+                    if timer.expired:
                         raise TimeoutError("Timed out waiting for '%s'", pattern)
 
     def send(self, string, send_eol=True):
