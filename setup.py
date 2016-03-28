@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 
 from setuptools import setup
-
-VERSION  = "3.0.0"
+import expect
 
 if __name__ == "__main__":
     setup(name='xpect',
-          version=VERSION,
+          version=expect.__version__,
           description='Programmed dialogue with interactive streams.',
           long_description=open('README.rst', 'r').read(),
           author='Erik Moqvist',

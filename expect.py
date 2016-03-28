@@ -6,6 +6,9 @@ import logging
 import sys
 import time
 
+__author__ = 'Erik Moqvist'
+__version__ = '3.1.0'
+
 LOGGER = logging.getLogger(__name__)
 
 
