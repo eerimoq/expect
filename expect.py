@@ -7,7 +7,7 @@ import sys
 import threading
 
 __author__ = 'Erik Moqvist'
-__version__ = '3.1.0'
+__version__ = '3.1.1'
 
 LOGGER = logging.getLogger(__name__)
 
@@ -103,39 +103,40 @@ class Handler(object):
         if timeout is not None:
             timer = _Timer(timeout)
 
-        # Wait for pattern.
-        re_expect = re.compile(r'(' + pattern + r')')
+        try:
+            # Wait for pattern.
+            re_expect = re.compile(r'(' + pattern + r')')
 
-        while True:
-            mo = re_expect.search(self.input_buffer)
+            while True:
+                mo = re_expect.search(self.input_buffer)
 
-            if mo:
-                LOGGER.debug("Found expected pattern '%s'.", pattern)
-                self.input_buffer = self.input_buffer[mo.end():]
-                
-                if timeout is not None:
-                    timer.cancel()
+                if mo:
+                    LOGGER.debug("Found expected pattern '%s'.", pattern)
+                    self.input_buffer = self.input_buffer[mo.end():]
 
-                return mo.group(1)
-            else:
-                char = self.iostream.read(1)
+                    return mo.group(1)
+                else:
+                    char = self.iostream.read(1)
 
-                if char in self.break_conditions:
-                    fmt = "break condition met: '{}' in '{}'."
-                    raise BreakConditionError(fmt.format(char, self.break_conditions))
+                    if char in self.break_conditions:
+                        fmt = "break condition met: '{}' in '{}'."
+                        raise BreakConditionError(fmt.format(char, self.break_conditions))
 
-                if self.print_input and print_input == True:
-                    self.output.write(char)
+                    if self.print_input and print_input == True:
+                        self.output.write(char)
 
-                self.input_buffer += char
+                    self.input_buffer += char
 
-                # Limit the input buffer size for faster pattern matching.
-                self.input_buffer = self.input_buffer[-self.receive_buffer_max:]
+                    # Limit the input buffer size for faster pattern matching.
+                    self.input_buffer = self.input_buffer[-self.receive_buffer_max:]
 
-                # Timeout handling.
-                if timeout is not None:
-                    if timer.expired:
-                        raise TimeoutError("Timed out waiting for '%s'", pattern)
+                    # Timeout handling.
+                    if timeout is not None:
+                        if timer.expired:
+                            raise TimeoutError("Timed out waiting for '%s'", pattern)
+        finally:
+            if timeout is not None:
+                timer.cancel()
 
     def send(self, string, send_eol=True):
         """Write given string to the iostream.
